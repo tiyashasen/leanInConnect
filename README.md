@@ -1,5 +1,9 @@
 # Lean In Connect — Momentum Feed
 
+**Application deployed:** https://leaninconnect-production.up.railway.app/
+
+**Source Code:** https://github.com/tiyashasen/leanInConnect
+
 A full-stack Lean In Connect prototype focused on a small but meaningful habit: sharing career wins. The experience helps members see progress, celebrate it together, and discover the next resource or conversation that can keep their momentum going.
 
 ## Stack and architecture
@@ -13,7 +17,7 @@ A full-stack Lean In Connect prototype focused on a small but meaningful habit: 
 The frontend and API intentionally run as separate processes. This makes the contract visible and keeps the backend ready to evolve independently (authentication, moderation, relational database, and observability) without coupling it to UI delivery.
 
 ```text
-Browser UI (localhost:3000) → GET/POST /api/wins → Spring Boot (localhost:8080) → JPA → H2
+Browser UI → GET/POST /api/wins → Spring Boot → JPA → H2
 ```
 
 Each module has one responsibility. The web layer never talks directly to JPA; it delegates to the service. This keeps HTTP concerns, domain data, business logic, and persistence replaceable and easy to test independently.
@@ -25,20 +29,13 @@ Each module has one responsibility. The web layer never talks directly to JPA; i
 Install Java 17+ and Maven, then from `backend` run:
 
 ```bash
+cd backend
 mvn spring-boot:run
 ```
 
 The API is available at `http://localhost:8080/api/wins`. H2 persists data locally under `backend/data`.
 
-### 2. Start the frontend
-
-From the project root, using Node 18+, run:
-
-```bash
-npm start
-```
-
-Open `http://localhost:3000`.
+Open `http://localhost:8080`.
 
 ## API contract
 
@@ -77,9 +74,8 @@ The career-win flow is real: creating a win sends a validated request to the Spr
 
 ### Key tradeoffs
 
-- I used H2 instead of PostgreSQL to make the project easy to run in a short take-home timebox; the repository/service boundary makes a production database swap straightforward.
+- I used H2 instead of PostgreSQL to make the project easy to run in a short take-home timebox. In the deployed environment, data may be reset when the application restarts. For production, I would replace H2 with PostgreSQL and persistent storage.
 - I used plain JavaScript rather than a larger frontend framework to emphasize the UI experience without unnecessary setup. It still owns client-side state for the modal, character counter, request lifecycle, and user feedback.
-- The CORS origin is explicitly local for development. Deployment should move it to environment-specific configuration.
 
 ### Next steps
 
@@ -91,3 +87,6 @@ With more time, I would add authenticated users, PostgreSQL with Flyway migratio
 - Use PostgreSQL and migrations (Flyway) for a production datastore.
 - Add unit/integration tests, rate limiting, moderation, and structured logs.
 - Move the API URL to deployment-specific environment configuration.
+- Accessibility improvements
+- Integration testing
+- CI/CD pipeline
